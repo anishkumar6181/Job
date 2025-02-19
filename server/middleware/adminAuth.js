@@ -4,7 +4,8 @@ import Admin from "../models/AdminModel.js";
 export const adminAuth = async (req, res, next) => {
   try {
     const token = req.cookies.jwt;
-    
+    console.log(req.cookies);
+    console.log(token);
     if (!token) {
       return res.status(401).json({ message: "Authentication required" });
     }
