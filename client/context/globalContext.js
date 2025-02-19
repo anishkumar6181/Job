@@ -161,7 +161,7 @@ const logout = async () => {
     localStorage.removeItem('adminToken');
     localStorage.removeItem('jobFormData');
     setIsAuthenticated(false);
-    router.push('/admin/login');
+    router.push('/');
 
   } catch (error) {
     console.error('Logout failed:', {
@@ -170,7 +170,7 @@ const logout = async () => {
     });
     // Fallback: Clear storage even if server fails
     localStorage.removeItem('adminToken');
-    router.push('/admin/login');
+    router.push('/');
   }
 };
 
