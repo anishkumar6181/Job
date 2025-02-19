@@ -95,9 +95,9 @@ export const GlobalContextProvider = ({ children }) => {
     const checkAuth = async () => {
       setLoading(true);
       try {
-        const res = await axios.get("/api/v1/check-auth");
+        const res = await axios.get("/admin/check-auth");
         setIsAuthenticated(res.data.isAuthenticated);
-        setAuth0User(res.data.user);
+        setAuth0User(res.data.admin);
         setLoading(false);
       } catch (error) {
         console.log("Error checking auth", error);
