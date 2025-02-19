@@ -53,7 +53,7 @@ export default function ContactPage(): JSX.Element {
     setStatus('idle');
 
     try {
-      const response = await fetch('http://localhost:8000/api/v1/contact', {
+      const response = await fetch('https://job-ro40.onrender.com/api/v1/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
