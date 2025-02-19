@@ -14,10 +14,23 @@ axios.defaults.baseURL = "https://job-ro40.onrender.com";
 axios.defaults.withCredentials = true;
 
 
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('adminToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+
 
 export const GlobalContextProvider = ({ children }) => {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   const [auth0User, setAuth0User] = useState(null);
   const [userProfile, setUserProfile] = useState({});
   const [loading, setLoading] = useState(false);
@@ -91,23 +104,7 @@ export const GlobalContextProvider = ({ children }) => {
   ]);
 
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      setLoading(true);
-      try {
-        const res = await axios.get("/admin/check-auth");
-        setIsAuthenticated(res.data.isAuthenticated);
-        setAuth0User(res.data.admin);
-        setLoading(false);
-      } catch (error) {
-        console.log("Error checking auth", error);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    checkAuth();
-  }, []);
 
   //  if(!isAuthenticated){
   //   return router.push("http://localhost:8000/login")
@@ -126,41 +123,61 @@ export const GlobalContextProvider = ({ children }) => {
   };
 
   // In your globalContext file where loginAdmin is defined
-const loginAdmin = async (email, password) => {
-  try {
-    const response = await fetch('https://job-ro40.onrender.com/admin/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await response.json();
-    
-    if (!response.ok) {
-      return { success: false, message: data.message };
+  const loginAdmin = async (email, password) => {
+    try {
+      const response = await axios.post('/admin/login', { email, password });
+      
+      if (response.data.success) {
+        // Store token
+        localStorage.setItem('adminToken', response.data.token);
+        setIsAuthenticated(true);
+        return { success: true };
+      }
+      
+      return { success: false, message: response.data.message };
+    } catch (error) {
+      console.error('Login error:', error);
+      return { 
+        success: false, 
+        message: error.response?.data?.message || 'Login failed' 
+      };
     }
-
-    return { success: true, admin: data.admin };
-  } catch (error) {
-    return { success: false, message: 'An error occurred during login' };
-  }
-};
+  };
 
 // Add these to your globalContext.js
-const logout = async () => {
-  try {
-    await fetch('https://job-ro40.onrender.com/admin/logout', {
-      method: 'POST',
-      credentials: 'include'
-    });
-    router.push('/admin/login');
-  } catch (error) {
-    console.error('Logout failed:', error);
-  }
-};
+  const logout = async () => {
+    try {
+      await axios.post('/admin/logout');
+      localStorage.removeItem('adminToken');
+      setIsAuthenticated(false);
+      router.push('/admin/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
+    useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const token = localStorage.getItem('adminToken');
+        if (!token) {
+          setIsAuthenticated(false);
+          setLoading(false);
+          return;
+        }
+
+        const response = await axios.get('/admin/check-auth');
+        setIsAuthenticated(response.data.success);
+      } catch (error) {
+        console.error('Auth check error:', error);
+        setIsAuthenticated(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
 
   // handle input change
   const handleTitleChange = (e) => {
@@ -207,6 +224,7 @@ const logout = async () => {
   return (
     <GlobalContext.Provider
       value={{
+       
         isAuthenticated,
         auth0User,
         userProfile,
