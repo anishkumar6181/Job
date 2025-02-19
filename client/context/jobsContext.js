@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 const JobsContext = createContext();
 
 
-axios.defaults.baseURL = "http://localhost:8000";
+axios.defaults.baseURL = "https://job-ro40.onrender.com";
 axios.defaults.withCredentials = true;
 
 export const JobsContextProvider = ({ children }) => {
@@ -269,7 +269,7 @@ export const JobsContextProvider = ({ children }) => {
   // fetch admin jobs
     const fetchAdminJobs = async () => {
       try {
-        const response = await fetch('http://localhost:8000/admin/jobs', {
+        const response = await fetch('https://job-ro40.onrender.com/admin/jobs', {
           credentials: 'include'
         });
         if (response.ok) {
