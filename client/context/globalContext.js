@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 
 const GlobalContext = createContext();
 
-axios.defaults.baseURL = "http://localhost:8000";
+axios.defaults.baseURL = "https://job-ro40.onrender.com";
 axios.defaults.withCredentials = true;
 
 
@@ -128,7 +128,7 @@ export const GlobalContextProvider = ({ children }) => {
   // In your globalContext file where loginAdmin is defined
 const loginAdmin = async (email, password) => {
   try {
-    const response = await fetch('http://localhost:8000/admin/login', {
+    const response = await fetch('https://job-ro40.onrender.com/admin/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -152,7 +152,7 @@ const loginAdmin = async (email, password) => {
 // Add these to your globalContext.js
 const logout = async () => {
   try {
-    await fetch('http://localhost:8000/admin/logout', {
+    await fetch('https://job-ro40.onrender.com/admin/logout', {
       method: 'POST',
       credentials: 'include'
     });
