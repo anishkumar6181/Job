@@ -191,9 +191,7 @@ export default function Home() {
             <Button size={"lg"} asChild>
               <Link href={"/findwork"}>Find Work</Link>
             </Button>
-            <Button size={"lg"} variant={"outline"} asChild>
-              <Link href={"/post"}>Post a Job</Link>
-            </Button>
+           
           </div>
         </div>
       </section>
