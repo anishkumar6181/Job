@@ -145,16 +145,35 @@ export const GlobalContextProvider = ({ children }) => {
   };
 
 // Add these to your globalContext.js
-  const logout = async () => {
-    try {
-      await axios.post('/admin/logout');
-      localStorage.removeItem('adminToken');
-      setIsAuthenticated(false);
-      router.push('/admin/login');
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
+const logout = async () => {
+  try {
+    const token = localStorage.getItem('adminToken');
+    if (!token) throw new Error('No token found');
+
+    // Send logout request with token
+    const response = await axios.post(
+      '/admin/logout',
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    // Clear client state only after success
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('jobFormData');
+    setIsAuthenticated(false);
+    router.push('/admin/login');
+
+  } catch (error) {
+    console.error('Logout failed:', {
+      message: error.response?.data?.message || error.message,
+      status: error.response?.status,
+    });
+    // Fallback: Clear storage even if server fails
+    localStorage.removeItem('adminToken');
+    router.push('/admin/login');
+  }
+};
+
 
     useEffect(() => {
     const checkAuth = async () => {
